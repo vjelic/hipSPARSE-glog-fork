@@ -12,142 +12,10 @@
           "informationUri": "https://www.glog.ai",
           "rules": [
             {
-              "id": "glog-e3d025d3-3540-4f94-bb87-0777869693a4",
+              "id": "e06a450b-bf4c-357e-b0f3-2f0f503422c6",
               "help": {
                 "text": "",
-                "markdown": "### Description\n\nThe \"Detected Issue with C Function (malloc)\" vulnerability in C++ typically arises from improper use of the `malloc` function, which is used to allocate memory dynamically. The specific vulnerability sink `malloc(sizeof(double)` indicates a potential issue where the size of the memory allocated may not be sufficient for the intended use, or the allocation may not be properly checked for success, leading to undefined behavior, memory corruption, or application crashes.\n\n### General Mitigation Advice\n\n1. **Check for Allocation Success**: Always check if `malloc` returns `NULL`, which indicates that the memory allocation failed.\n2. **Use `sizeof` Correctly**: Ensure that the `sizeof` operator is used correctly to allocate the appropriate amount of memory.\n3. **Initialize Allocated Memory**: Consider using `calloc` instead of `malloc` if you need the allocated memory to be initialized to zero.\n4. **Free Allocated Memory**: Always free the allocated memory using `free` to prevent memory leaks.\n5. **Use Safer Alternatives**: In C++, prefer using `new` and `delete` or smart pointers like `std::unique_ptr` and `std::shared_ptr` for memory management.\n\n### Source Code Fix Recommendation\n\nHere is a corrected version of the code snippet using `malloc`:\n\n```cpp\n#include <cstdlib>  // Required for malloc and free\n#include <iostream> // Required for std::cout\n\nint main() {\n    // Correctly allocate memory for one double\n    double* ptr = (double*)malloc(sizeof(double));\n    \n    // Check if allocation was successful\n    if (ptr == nullptr) {\n        std::cerr << \"Memory allocation failed\" << std::endl;\n        return 1;\n    }\n\n    // Use the allocated memory\n    *ptr = 3.14;\n    std::cout << \"Value: \" << *ptr << std::endl;\n\n    // Free the allocated memory\n    free(ptr);\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\n- `<cstdlib>`: Required for `malloc` and `free`.\n- `<iostream>`: Required for input and output operations.\n\n### OWASP Resources\n\n- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)\n- [OWASP Secure Coding Practices](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-122: Heap-based Buffer Overflow](https://cwe.mitre.org/data/definitions/122.html)\n- [CWE-401: Missing Release of Memory after Effective Lifetime](https://cwe.mitre.org/data/definitions/401.html)"
-              },
-              "properties": {
-                "tags": [
-                  "DS161085"
-                ]
-              }
-            },
-            {
-              "id": "glog-d38b9a1a-7d1a-4d31-9d5b-c638efa881cb",
-              "help": {
-                "text": "",
-                "markdown": "## Description\n\nThe `malloc` function in C++ is used to dynamically allocate memory at runtime. However, it can be a source of vulnerabilities if not used correctly. If the size of the memory to be allocated is not properly validated or calculated, it can lead to buffer overflows, memory corruption, or other unexpected behavior. This can potentially be exploited to execute arbitrary code, cause a denial of service, or leak sensitive information.\n\nIn the provided code snippet, `malloc(sizeof(hipComplex))`, the size of the memory to be allocated is determined by the size of the `hipComplex` type. If the `hipComplex` type is not defined or its size is not properly calculated, it can lead to the aforementioned issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always validate and correctly calculate the size of the memory to be allocated. Avoid using `malloc` with user-supplied sizes or sizes that can be influenced by an attacker. Instead, use fixed sizes or sizes based on trusted data.\n\n## Source Code Fix Recommendation\n\nAssuming `hipComplex` is a struct or class, you should ensure its size is correctly calculated. If `hipComplex` is not defined, you should define it before using it with `malloc`. Here is an example:\n\n```cpp\nstruct hipComplex {\n    // Define the members of the struct here.\n};\n\n// ...\n\nhipComplex* complex = (hipComplex*) malloc(sizeof(hipComplex));\nif (complex == NULL) {\n    // Handle the error.\n}\n```\n\n## Library Dependencies\n\nThe `malloc` function is part of the C standard library, so no additional libraries are required for the provided code snippet.\n\n## References\n\n- [CWE-131: Incorrect Calculation of Buffer Size](https://cwe.mitre.org/data/definitions/131.html)\n\nPlease note that the links are valid and active at the time of writing this report."
-              },
-              "properties": {
-                "tags": [
-                  "DS161085"
-                ]
-              }
-            },
-            {
-              "id": "glog-941a5544-6951-4da7-9be9-23e3cd0534bf",
-              "help": {
-                "text": "",
-                "markdown": "## Description\n\nThe vulnerability in question is related to the `malloc` function in C++. `malloc` is a function that dynamically allocates memory at runtime. The problem arises when the size of the memory to be allocated is not properly validated or is influenced by an attacker, leading to a buffer overflow vulnerability. This can lead to various security issues such as code execution, denial of service, or information disclosure.\n\nIn the provided code snippet, `malloc(sizeof(hipDoubleComplex))`, the size of the memory to be allocated is determined by the size of `hipDoubleComplex`. If the size of `hipDoubleComplex` is not properly controlled or validated, it can lead to the aforementioned security issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always validate the size of the memory to be allocated. Never trust user input for determining the size. Also, consider using functions that limit the amount of memory that can be written, such as `calloc`, instead of `malloc`.\n\n## Source Code Fix Recommendation\n\nInstead of using `malloc`, consider using `calloc` which initializes the allocated memory to zero. This can prevent uninitialized memory from being used in case of an error. Here is how you can do it:\n\n```cpp\nhipDoubleComplex* complex = (hipDoubleComplex*) calloc(1, sizeof(hipDoubleComplex));\nif (complex == NULL) {\n    // handle error\n}\n```\n\n## Library Dependencies\n\nThe code example requires the `stdlib.h` library for the `malloc` function and `hip/hip_complex.h` for `hipDoubleComplex`.\n\n## References\n\n- [OWASP C++ Secure Coding](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n\n## CWE\n\nThis vulnerability can be classified under [CWE-120: Buffer Copy without Checking Size of Input ('Classic' Buffer Overflow)](https://cwe.mitre.org/data/definitions/120.html)."
-              },
-              "properties": {
-                "tags": [
-                  "DS161085"
-                ]
-              }
-            },
-            {
-              "id": "glog-de680f7a-8e5b-4587-a981-7b1d9a938688",
-              "help": {
-                "text": "",
-                "markdown": "### Description\n\nIn C++ programming, using system time or a fixed value to seed randomness can lead to predictable random number sequences. This vulnerability can be exploited by attackers to predict the outcomes of supposedly random operations, which can compromise security, especially in cryptographic applications or when generating unique identifiers.\n\n### General Mitigation Advice\n\nTo mitigate this vulnerability, use a more secure source of randomness for seeding. The C++11 standard library provides `std::random_device`, which is a non-deterministic random number generator that can be used to seed other random number generators.\n\n### Source Code Fix Recommendation\n\nReplace the use of `srand(0)` with a more secure seeding method using `std::random_device` and `std::mt19937`:\n\n```cpp\n#include <iostream>\n#include <random> // Required for std::random_device and std::mt19937\n\nint main() {\n    // Create a random device and use it to seed the random number generator\n    std::random_device rd;\n    std::mt19937 gen(rd());\n\n    // Generate a random number\n    std::uniform_int_distribution<> dis(1, 100);\n    int random_number = dis(gen);\n\n    std::cout << \"Random number: \" << random_number << std::endl;\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\nTo execute the code example properly, the following standard library headers are required:\n\n- `<iostream>`: For input and output operations.\n- `<random>`: For random number generation utilities.\n\n### Relevant Links\n\n- [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n- [CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)](https://cwe.mitre.org/data/definitions/338.html)"
-              },
-              "properties": {
-                "tags": [
-                  "DS149435"
-                ]
-              }
-            },
-            {
-              "id": "glog-4e41e5a0-1ff1-4654-9dd2-6fadef10941c",
-              "help": {
-                "text": "",
-                "markdown": "### Description\n\nIn C++ programming, using system time or a fixed value to seed randomness can lead to predictable random number sequences. This vulnerability can be exploited by attackers to predict the outcomes of supposedly random operations, which can compromise security, especially in cryptographic applications or when generating unique identifiers.\n\n### General Mitigation Advice\n\nTo mitigate this vulnerability, use a more secure source of randomness for seeding. The C++11 standard library provides `std::random_device`, which is a non-deterministic random number generator that can be used to seed other random number generators.\n\n### Source Code Fix Recommendation\n\nReplace the use of `srand(0)` with a more secure seeding method using `std::random_device` and `std::mt19937`:\n\n```cpp\n#include <iostream>\n#include <random> // Required for std::random_device and std::mt19937\n\nint main() {\n    // Create a random device and use it to seed the random number generator\n    std::random_device rd;\n    std::mt19937 gen(rd());\n\n    // Generate a random number\n    std::uniform_int_distribution<> dis(1, 100);\n    int random_number = dis(gen);\n\n    std::cout << \"Random number: \" << random_number << std::endl;\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\nTo execute the code example properly, the following standard library headers are required:\n\n- `<iostream>`: For input and output operations.\n- `<random>`: For random number generation utilities.\n\n### Relevant Links\n\n- [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n- [CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)](https://cwe.mitre.org/data/definitions/338.html)"
-              },
-              "properties": {
-                "tags": [
-                  "DS149435"
-                ]
-              }
-            },
-            {
-              "id": "glog-e07adf1d-2ace-4b25-93fe-741df3578920",
-              "help": {
-                "text": "",
-                "markdown": "### Description\n\nThe \"Detected Issue with C Function (malloc)\" vulnerability in C++ programming arises when the `malloc` function is used incorrectly, potentially leading to memory allocation issues such as buffer overflows, memory leaks, or undefined behavior. In the specific case of `malloc(sizeof(float))`, the vulnerability may occur if the allocated memory is insufficient for the intended use, or if the allocation is not properly checked for success, leading to potential dereferencing of a null pointer.\n\n### General Mitigation Advice\n\n1. **Check for Allocation Success**: Always verify that the memory allocation was successful by checking if the returned pointer is not `NULL`.\n2. **Use `new` in C++**: Prefer using `new` and `delete` in C++ for memory management, as they provide better type safety and integration with C++ object semantics.\n3. **Proper Size Calculation**: Ensure that the size passed to `malloc` is correct and accounts for the number of elements and their type.\n4. **Free Allocated Memory**: Always free the allocated memory when it is no longer needed to prevent memory leaks.\n\n### Source Code Fix Recommendation\n\nHere is a corrected version of the code using `new` instead of `malloc`:\n\n```cpp\n#include <iostream>\n\nint main() {\n    // Allocate memory for a single float\n    float* ptr = new (std::nothrow) float;\n    \n    // Check if allocation was successful\n    if (ptr == nullptr) {\n        std::cerr << \"Memory allocation failed\" << std::endl;\n        return 1;\n    }\n\n    // Use the allocated memory\n    *ptr = 3.14f;\n    std::cout << \"Value: \" << *ptr << std::endl;\n\n    // Free the allocated memory\n    delete ptr;\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\nThe above code example requires the following standard library:\n\n- `<iostream>`: For input and output operations.\n\n### Relevant Links\n\n- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)\n- [OWASP Secure Coding Practices](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)\n- [CWE-119: Improper Restriction of Operations within the Bounds of a Memory Buffer](https://cwe.mitre.org/data/definitions/119.html)\n- [CWE-476: NULL Pointer Dereference](https://cwe.mitre.org/data/definitions/476.html)"
-              },
-              "properties": {
-                "tags": [
-                  "DS161085"
-                ]
-              }
-            },
-            {
-              "id": "glog-cb4100da-f29c-4fd5-9b0a-31980f942410",
-              "help": {
-                "text": "",
-                "markdown": "## Description\n\nThe vulnerability in question is related to the `malloc` function in C++. `malloc` is a function that dynamically allocates memory at runtime. The problem arises when the size of the memory to be allocated is not properly validated or is influenced by an attacker, leading to a buffer overflow vulnerability. This can lead to various security issues such as code execution, denial of service, or information disclosure.\n\nIn the provided code snippet, `malloc(sizeof(hipDoubleComplex))`, the size of the memory to be allocated is determined by the size of `hipDoubleComplex`. If the size of `hipDoubleComplex` is not properly controlled or validated, it can lead to the aforementioned security issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always validate the size of the memory to be allocated. Never trust user input for determining the size. Also, consider using functions that limit the amount of memory that can be written, such as `calloc`, instead of `malloc`.\n\n## Source Code Fix Recommendation\n\nInstead of using `malloc`, consider using `calloc` which initializes the allocated memory to zero. This can prevent uninitialized memory from being used in case of an error. Here is how you can do it:\n\n```cpp\nhipDoubleComplex* complex = (hipDoubleComplex*) calloc(1, sizeof(hipDoubleComplex));\nif (complex == NULL) {\n    // handle error\n}\n```\n\n## Library Dependencies\n\nThe code example requires the `stdlib.h` library for the `malloc` function and `hip/hip_complex.h` for `hipDoubleComplex`.\n\n## References\n\n- [OWASP C++ Secure Coding](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n\n## CWE\n\nThis vulnerability can be classified under [CWE-120: Buffer Copy without Checking Size of Input ('Classic' Buffer Overflow)](https://cwe.mitre.org/data/definitions/120.html)."
-              },
-              "properties": {
-                "tags": [
-                  "DS161085"
-                ]
-              }
-            },
-            {
-              "id": "glog-d4b9cdf2-2bc1-4ef0-9a47-c239aa55e832",
-              "help": {
-                "text": "",
-                "markdown": "### Description\n\nIn C++ programming, using weak or non-cryptographic random number generators can lead to vulnerabilities, especially when randomness is required for security purposes. The `rand()` function, which relies on `RAND_MAX`, is a common example of a non-cryptographic random number generator. It is predictable and not suitable for cryptographic purposes, such as generating keys, tokens, or any other security-sensitive data.\n\n### General Mitigation Advice\n\nTo mitigate this vulnerability, use a cryptographic random number generator. In C++, the `<random>` library provides better alternatives, such as `std::random_device` and `std::mt19937`, which are more suitable for generating random numbers in a secure manner.\n\n### Source Code Fix Recommendation\n\nReplace the use of `rand()` with a more secure random number generator from the `<random>` library. Here's an example of how to do this:\n\n```cpp\n#include <iostream>\n#include <random>\n\nint main() {\n    // Create a random device and a Mersenne Twister random number generator\n    std::random_device rd;\n    std::mt19937 gen(rd());\n\n    // Define the range for random numbers\n    std::uniform_int_distribution<> dis(1, 100);\n\n    // Generate a random number\n    int random_number = dis(gen);\n\n    std::cout << \"Secure random number: \" << random_number << std::endl;\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\nTo execute the above code example, the following library is required:\n\n- `<random>`: This is part of the C++ Standard Library and does not require any additional dependencies beyond a standard C++11-compliant compiler.\n\n### Relevant OWASP Resources\n\n- [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)](https://cwe.mitre.org/data/definitions/338.html)"
-              },
-              "properties": {
-                "tags": [
-                  "DS148264"
-                ]
-              }
-            },
-            {
-              "id": "glog-550a5fca-bc67-4bf0-bb37-5a9192a4a3a7",
-              "help": {
-                "text": "",
-                "markdown": "### Description\n\nIn C++ programming, using weak or non-cryptographic random number generators, such as the `rand()` function, can lead to vulnerabilities, especially in security-sensitive applications. The `rand()` function is not suitable for cryptographic purposes because it generates predictable sequences of numbers if the seed is known. This predictability can be exploited by attackers to compromise the security of the application.\n\n### General Mitigation Advice\n\nTo mitigate this vulnerability, use a cryptographically secure random number generator. In C++, the `<random>` library provides better alternatives, such as `std::random_device` and `std::mt19937`, which can be used to generate random numbers more securely.\n\n### Source Code Fix Recommendation\n\nReplace the use of `rand()` with a more secure random number generator from the `<random>` library. Here is an example of how to do this:\n\n```cpp\n#include <iostream>\n#include <random>\n\nint main() {\n    // Create a random device and a Mersenne Twister random number generator\n    std::random_device rd;\n    std::mt19937 gen(rd());\n\n    // Define a distribution range\n    std::uniform_int_distribution<> dis(1, 100);\n\n    // Generate a random number\n    int random_number = dis(gen);\n\n    std::cout << \"Secure random number: \" << random_number << std::endl;\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\nTo execute the above code example properly, the following library is required:\n\n- `<random>`: This library provides facilities for generating random numbers.\n\n### OWASP Resources\n\n- [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)](https://cwe.mitre.org/data/definitions/338.html)"
-              },
-              "properties": {
-                "tags": [
-                  "DS148264"
-                ]
-              }
-            },
-            {
-              "id": "glog-ece8f10a-2b99-4c39-b20f-afc63128c779",
-              "help": {
-                "text": "",
-                "markdown": "### Description\n\nIn C++ programming, using weak or non-cryptographic random number generators can lead to vulnerabilities, especially when randomness is required for security purposes. The `rand()` function, which relies on `RAND_MAX`, is a common example of a non-cryptographic random number generator. It is predictable and not suitable for cryptographic purposes, such as generating keys, tokens, or any other security-sensitive data.\n\n### General Mitigation Advice\n\nTo mitigate this vulnerability, use a cryptographic random number generator. In C++, the `<random>` library provides better alternatives, such as `std::random_device` and `std::mt19937`, which are more suitable for generating random numbers in a secure manner.\n\n### Source Code Fix Recommendation\n\nReplace the use of `rand()` with a more secure random number generator from the `<random>` library. Here's an example of how to do this:\n\n```cpp\n#include <iostream>\n#include <random>\n\nint main() {\n    // Create a random device and a Mersenne Twister random number generator\n    std::random_device rd;\n    std::mt19937 gen(rd());\n\n    // Define the range for random numbers\n    std::uniform_int_distribution<> dis(1, 100);\n\n    // Generate a random number\n    int random_number = dis(gen);\n\n    std::cout << \"Secure random number: \" << random_number << std::endl;\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\nTo execute the above code example, the following library is required:\n\n- `<random>`: This is part of the C++ Standard Library and does not require any additional dependencies beyond a standard C++11-compliant compiler.\n\n### Relevant OWASP Resources\n\n- [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)](https://cwe.mitre.org/data/definitions/338.html)"
-              },
-              "properties": {
-                "tags": [
-                  "DS148264"
-                ]
-              }
-            },
-            {
-              "id": "glog-7d363cf4-dabd-4fc3-8644-dcc3df6c95dc",
-              "help": {
-                "text": "",
-                "markdown": "### Description\n\nIn C++ programming, using weak or non-cryptographic random number generators, such as the `rand()` function, can lead to vulnerabilities, especially in security-sensitive applications. The `rand()` function is not suitable for cryptographic purposes because it generates predictable sequences of numbers if the seed is known. This predictability can be exploited by attackers to compromise the security of the application.\n\n### General Mitigation Advice\n\nTo mitigate this vulnerability, use a cryptographically secure random number generator. In C++, the `<random>` library provides better alternatives, such as `std::random_device` and `std::mt19937`, which can be used to generate random numbers more securely.\n\n### Source Code Fix Recommendation\n\nReplace the use of `rand()` with a more secure random number generator from the `<random>` library. Here is an example of how to do this:\n\n```cpp\n#include <iostream>\n#include <random>\n\nint main() {\n    // Create a random device and a Mersenne Twister random number generator\n    std::random_device rd;\n    std::mt19937 gen(rd());\n\n    // Define a distribution range\n    std::uniform_int_distribution<> dis(1, 100);\n\n    // Generate a random number\n    int random_number = dis(gen);\n\n    std::cout << \"Secure random number: \" << random_number << std::endl;\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\nTo execute the above code example properly, the following library is required:\n\n- `<random>`: This library provides facilities for generating random numbers.\n\n### OWASP Resources\n\n- [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)](https://cwe.mitre.org/data/definitions/338.html)"
-              },
-              "properties": {
-                "tags": [
-                  "DS148264"
-                ]
-              }
-            },
-            {
-              "id": "glog-800c0c25-b66c-4508-b4e2-3ab359bf4f8a",
-              "help": {
-                "text": "",
-                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function is vulnerable to buffer overflow attacks if the size of the data being copied is larger than the size of the destination buffer. In the provided code snippet, `memcpy(hipsparse_rev, v, sizeof(v))`, the size of the source data `v` is not checked before it is copied to the destination `hipsparse_rev`. If the size of `v` is larger than `hipsparse_rev`, it can lead to a buffer overflow, which can cause the program to crash or lead to execution of arbitrary code.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that the destination buffer is large enough to hold the source data. This can be done by checking the size of the source data before copying it to the destination buffer. If the size of the source data is larger than the destination buffer, do not proceed with the copy operation.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code snippet:\n\n```cpp\nsize_t size = sizeof(v);\nif (size <= sizeof(hipsparse_rev)) {\n    memcpy(hipsparse_rev, v, size);\n} else {\n    // Handle error\n}\n```\n\nIn this fixed code, the size of the source data `v` is checked before it is copied to the destination buffer `hipsparse_rev`. If the size of `v` is larger than `hipsparse_rev`, the copy operation is not performed.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C Standard Library, so no additional libraries are required for the provided code snippet to execute properly.\n\n## OWASP Resources\n\n- [Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)"
+                "markdown": "This finding is considered a genuine vulnerability because the analysis classified it as a risk of undefined behavior due to possible overlap between the source and destination buffers in a memory copy operation. The destination is a fixed-size character array, and the source is an identifier, with evidence of possible aliasing between them. The use of memcpy when the source and destination may overlap can result in undefined behavior, potentially leading to data corruption or security issues. There are no explicit null checks or guards, and the analysis observed an alias assignment, increasing the likelihood of overlap. The destination and source are both local arrays, and the copy size is determined by sizeof(v), which may not match the destination's capacity, further increasing risk.\n\n## In Context Remediation\nTo prevent undefined behavior when copying memory between potentially overlapping regions, use `memmove` instead of `memcpy`. `memmove` is designed to handle overlapping memory safely. Replace the original call with:\n\n```cpp\nmemmove(hipsparse_rev, v, sizeof(v));\n```\n\nThis change ensures that the copy operation is safe even if the source and destination buffers overlap.\n\n## References\n- [OWASP C-Based Toolchain Hardening Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-119: Improper Restriction of Operations within the Bounds of a Memory Buffer](https://cwe.mitre.org/data/definitions/119.html)\n- [CWE-787: Out-of-bounds Write](https://cwe.mitre.org/data/definitions/787.html)\n- [OWASP Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n\n___\n"
               },
               "properties": {
                 "tags": [
@@ -156,14 +24,512 @@
               }
             },
             {
-              "id": "glog-c568768e-13c3-4316-8fa2-404c18791d3f",
+              "id": "3e4be113-600b-3e71-b993-58ce96cbc798",
               "help": {
                 "text": "",
-                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function is vulnerable to buffer overflow attacks if the size of the data being copied is larger than the size of the destination buffer. In the provided code snippet, `memcpy(hipsparse_rev, v, sizeof(v))`, the size of the source data `v` is not checked before it is copied to the destination `hipsparse_rev`. If the size of `v` is larger than `hipsparse_rev`, it can lead to a buffer overflow, which can cause the program to crash or lead to execution of arbitrary code.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that the destination buffer is large enough to hold the source data. This can be done by checking the size of the source data before copying it to the destination buffer. If the size of the source data is larger than the destination buffer, do not proceed with the copy operation.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code snippet:\n\n```cpp\nsize_t size = sizeof(v);\nif (size <= sizeof(hipsparse_rev)) {\n    memcpy(hipsparse_rev, v, size);\n} else {\n    // Handle error\n}\n```\n\nIn this fixed code, the size of the source data `v` is checked before it is copied to the destination buffer `hipsparse_rev`. If the size of `v` is larger than `hipsparse_rev`, the copy operation is not performed.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C Standard Library, so no additional libraries are required for the provided code snippet to execute properly.\n\n## OWASP Resources\n\n- [Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)"
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "3de19b7f-8172-3c4b-9c5e-824f298bbd8e",
+              "help": {
+                "text": "",
+                "markdown": "This finding is classified as a genuine vulnerability because the analysis detected a possible risk of undefined behavior due to overlapping memory regions in a buffer copy operation. The destination buffer is a fixed-size character array, and the source is an identifier, with evidence of a possible alias assignment between the source and destination. This means that the source and destination may refer to overlapping memory, which is not allowed for memcpy and can result in unpredictable program behavior. There are no explicit null pointer risks, and the destination buffer is not a pointer-based member, so the main concern is the potential for memory overlap. No guard or mitigation is present in the code to prevent this issue.\n\n## In Context Remediation\nTo prevent undefined behavior when copying memory between potentially overlapping regions, use `memmove` instead of `memcpy`. `memmove` is designed to handle overlapping memory safely. Replace the original call with:\n\n```cpp\nmemmove(hipsparse_rev, v, sizeof(v));\n```\n\nThis change ensures that the copy operation is safe even if the source and destination buffers overlap.\n\n## References\n- [OWASP C-Based Toolchain Hardening Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-119: Improper Restriction of Operations within the Bounds of a Memory Buffer](https://cwe.mitre.org/data/definitions/119.html)\n- [CWE-787: Out-of-bounds Write](https://cwe.mitre.org/data/definitions/787.html)\n- [OWASP Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n\n___\n"
               },
               "properties": {
                 "tags": [
                   "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "d604b964-ae57-3d89-8f01-3ce8de612d43",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability refers to the use of insecure C library functions in C++ code. These functions are often prone to buffer overflow attacks, format string vulnerabilities, or integer overflows. In this case, the `std::ctime` function is used, which is not thread-safe and can lead to data races in multi-threaded programs.\n\n## Mitigation Advice\n\nAvoid using non-thread-safe functions like `std::ctime`. Instead, use thread-safe alternatives provided by the C++ Standard Library. Always validate and sanitize input data before processing it. Be aware of the potential for buffer overflows and other common vulnerabilities when using C library functions.\n\n## Source Code Fix Recommendation\n\nReplace the `std::ctime` function with a thread-safe alternative, such as `std::chrono`:\n\n```cpp\n#include <chrono>\n#include <ctime>\n#include <iostream>\n\nint main() {\n    auto end_time = std::chrono::system_clock::now();\n    std::time_t end_time_c = std::chrono::system_clock::to_time_t(end_time);\n    std::cout << \"end time: \" << std::ctime(&end_time_c) << std::endl;\n    return 0;\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- `<chrono>`\n- `<ctime>`\n- `<iostream>`\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "f0fa3182-777d-376d-9b29-27eb2b3120f9",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "e6933e0c-bf8f-305c-9aad-7f0298e6c746",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "7b6e0db1-40f9-3d60-a72a-c6383bb19a93",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "1c088e1c-884e-3ac8-aff3-62e82c94b614",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "6f82ab75-0fe0-3b95-9c08-2f5a79f4525d",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "e23525f1-cab9-3410-8509-52bdfb111e48",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, the vulnerability \"Avoid Using Non-Cryptographic or Weak Random Number Generators\" refers to the use of weak or non-cryptographic random number generators that can lead to predictable or easily guessable values. This can be exploited by attackers to predict the outcome of the program, leading to security breaches.\n\nThe specific vulnerability sink in the code `rng = row_begin + rand() % row_nnz` is the use of `rand()`, a weak random number generator. The `rand()` function in C++ is not suitable for generating random numbers in a security context as it is not designed to be unpredictable.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, use a strong, cryptographic random number generator instead of `rand()`. In C++, you can use the `<random>` library, which provides a variety of random number generators that are more suitable for generating unpredictable numbers.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the code:\n\n```cpp\n#include <random>\n\nstd::random_device rd;\nstd::mt19937 gen(rd());\nstd::uniform_int_distribution<> dis(row_begin, row_nnz);\n\nrng = dis(gen);\n```\n\nIn this code, `std::random_device` is used to seed the Mersenne Twister engine (`std::mt19937`), which is a strong random number generator. `std::uniform_int_distribution<>` is then used to generate a random number in the range `[row_begin, row_nnz]`.\n\n## Library Dependencies\n\nThe code example requires the `<random>` library.\n\n## References\n\n- [CWE-338: Use of Cryptographically Weak PRNG](https://cwe.mitre.org/data/definitions/338.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS148264",
+                  "e23525f1-cab9-3410-8509-52bdfb111e48"
+                ]
+              }
+            },
+            {
+              "id": "bd59aef5-1f7c-3010-aa6f-82f573f207e4",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, the vulnerability \"Avoid Using Non-Cryptographic or Weak Random Number Generators\" refers to the use of weak or non-cryptographic random number generators that can lead to predictable or easily guessable values. This can be exploited by attackers to predict the outcome of the program, leading to security breaches.\n\nThe specific vulnerability sink in the code `rng = row_begin + rand() % row_nnz` is the use of `rand()`, a weak random number generator. The `rand()` function in C++ is not suitable for generating random numbers in a security context as it is not designed to be unpredictable.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, use a strong, cryptographic random number generator instead of `rand()`. In C++, you can use the `<random>` library, which provides a variety of random number generators that are more suitable for generating unpredictable numbers.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the code:\n\n```cpp\n#include <random>\n\nstd::random_device rd;\nstd::mt19937 gen(rd());\nstd::uniform_int_distribution<> dis(row_begin, row_nnz);\n\nrng = dis(gen);\n```\n\nIn this code, `std::random_device` is used to seed the Mersenne Twister engine (`std::mt19937`), which is a strong random number generator. `std::uniform_int_distribution<>` is then used to generate a random number in the range `[row_begin, row_nnz]`.\n\n## Library Dependencies\n\nThe code example requires the `<random>` library.\n\n## References\n\n- [CWE-338: Use of Cryptographically Weak PRNG](https://cwe.mitre.org/data/definitions/338.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS148264",
+                  "bd59aef5-1f7c-3010-aa6f-82f573f207e4"
+                ]
+              }
+            },
+            {
+              "id": "d6956ec4-4d48-316d-9a1d-21228179a9dd",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, using system time or a static value to seed randomness can lead to predictable random numbers, which is a security vulnerability. This is because if an attacker can predict the seed value, they can predict the sequence of random numbers that will be generated, which can lead to various types of attacks, such as brute force attacks.\n\nIn the given code example, `srand(0)` is used to seed the random number generator. This is a static value, which means that every time the program is run, the same sequence of random numbers will be generated. This makes the random numbers predictable, which is a security vulnerability.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should use a truly random value to seed the random number generator. One way to do this is to use the current time, but this is still predictable to some extent. A better way is to use a value that is more difficult for an attacker to predict, such as the process ID or a value from a hardware random number generator.\n\n## Source Code Fix Recommendation\n\nHere is a code fix that uses the process ID to seed the random number generator:\n\n```cpp\n#include <cstdlib>\n#include <ctime>\n#include <unistd.h>\n\nint main() {\n    srand(getpid() ^ time(NULL));\n    // rest of the code\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following libraries:\n\n- cstdlib\n- ctime\n- unistd.h\n\n## References\n\n- [CWE-330: Use of Insufficiently Random Values](https://cwe.mitre.org/data/definitions/330.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS149435"
+                ]
+              }
+            },
+            {
+              "id": "1ea99f54-abe5-319a-b076-a594abdf5f9b",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "aec05aa6-ec4f-310f-8e77-334e8f3d5bde",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, the use of non-cryptographic or weak random number generators can lead to vulnerabilities. This is because these generators can produce predictable outcomes, which can be exploited by attackers. The `rand()` function in C++ is a non-cryptographic random number generator, which means it is not suitable for generating random numbers in a security context.\n\nThe specific vulnerability sink in the provided code is `rng = rand() % nnz`. Here, `rand()` generates a pseudo-random number, which is then reduced modulo `nnz`. This can lead to biased results, as the lower numbers are more likely to be chosen than the higher ones.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should use a cryptographic random number generator instead of `rand()`. In C++, you can use the `<random>` library, which provides a variety of random number generators that are more secure and less predictable.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code:\n\n```cpp\n#include <random>\n\nstd::random_device rd;\nstd::mt19937 gen(rd());\nstd::uniform_int_distribution<> dis(0, nnz);\n\nrng = dis(gen);\n```\n\nIn this code, `std::random_device` is used to seed the Mersenne Twister engine (`std::mt19937`), which is a cryptographic random number generator. Then, `std::uniform_int_distribution` is used to ensure that each number in the range [0, `nnz`] has an equal chance of being chosen.\n\n## Library Dependencies\n\nThe code example requires the `<random>` library.\n\n## References\n\n- [CWE-338: Use of Cryptographically Weak PRNG](https://cwe.mitre.org/data/definitions/338.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS148264",
+                  "aec05aa6-ec4f-310f-8e77-334e8f3d5bde"
+                ]
+              }
+            },
+            {
+              "id": "11245c4a-71a0-35cb-b7a8-261aa80af178",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, using system time or a static value to seed randomness can lead to predictable random numbers, which is a security vulnerability. This is because if an attacker can predict the seed value, they can predict the sequence of random numbers that will be generated, which can lead to various types of attacks, such as brute force attacks.\n\nIn the given code example, `srand(0)` is used to seed the random number generator. This is a static value, which means that every time the program is run, the same sequence of random numbers will be generated. This makes the random numbers predictable, which is a security vulnerability.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should use a truly random value to seed the random number generator. One way to do this is to use the current time, but this is still predictable to some extent. A better way is to use a value that is more difficult for an attacker to predict, such as the process ID or a value from a hardware random number generator.\n\n## Source Code Fix Recommendation\n\nHere is a code fix that uses the process ID to seed the random number generator:\n\n```cpp\n#include <cstdlib>\n#include <ctime>\n#include <unistd.h>\n\nint main() {\n    srand(getpid() ^ time(NULL));\n    // rest of the code\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following libraries:\n\n- cstdlib\n- ctime\n- unistd.h\n\n## References\n\n- [CWE-330: Use of Insufficiently Random Values](https://cwe.mitre.org/data/definitions/330.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS149435"
+                ]
+              }
+            },
+            {
+              "id": "4bd13cd2-b323-3154-8875-ba82874c2143",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "ae234266-b36e-3716-bdfa-21ba6f27b78e",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "f6a0946d-c953-3fb5-8846-9667af7904a4",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, the use of non-cryptographic or weak random number generators can lead to vulnerabilities. This is because these generators can produce predictable outcomes, which can be exploited by attackers. The `rand()` function in C++ is a non-cryptographic random number generator, which means it is not suitable for generating random numbers in a security context.\n\nThe specific vulnerability sink in the provided code is `rng = rand() % nnz`. Here, `rand()` generates a pseudo-random number, which is then reduced modulo `nnz`. This can lead to biased results, as the lower numbers are more likely to be chosen than the higher ones.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should use a cryptographic random number generator instead of `rand()`. In C++, you can use the `<random>` library, which provides a variety of random number generators that are more secure and less predictable.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code:\n\n```cpp\n#include <random>\n\nstd::random_device rd;\nstd::mt19937 gen(rd());\nstd::uniform_int_distribution<> dis(0, nnz);\n\nrng = dis(gen);\n```\n\nIn this code, `std::random_device` is used to seed the Mersenne Twister engine (`std::mt19937`), which is a cryptographic random number generator. Then, `std::uniform_int_distribution` is used to ensure that each number in the range [0, `nnz`] has an equal chance of being chosen.\n\n## Library Dependencies\n\nThe code example requires the `<random>` library.\n\n## References\n\n- [CWE-338: Use of Cryptographically Weak PRNG](https://cwe.mitre.org/data/definitions/338.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS148264",
+                  "f6a0946d-c953-3fb5-8846-9667af7904a4"
+                ]
+              }
+            },
+            {
+              "id": "d2b5b19c-4fb7-36cc-a0ee-0d17c88efcf6",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "fcac4e12-4325-3d82-b24f-b89fc16ce25e",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "6b976003-2e6d-3175-8798-236eacf85ef8",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, using system time or a static value to seed randomness can lead to predictable random numbers, which is a security vulnerability. This is because if an attacker can predict the seed value, they can predict the sequence of random numbers that will be generated, which can lead to various types of attacks, such as brute force attacks.\n\nIn the given code example, `srand(0)` is used to seed the random number generator. This is a static value, which means that every time the program is run, the same sequence of random numbers will be generated. This makes the random numbers predictable, which is a security vulnerability.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should use a truly random value to seed the random number generator. One way to do this is to use the current time, but this is still predictable to some extent. A better way is to use a value that is more difficult for an attacker to predict, such as the process ID or a value from a hardware random number generator.\n\n## Source Code Fix Recommendation\n\nHere is a code fix that uses the process ID to seed the random number generator:\n\n```cpp\n#include <cstdlib>\n#include <ctime>\n#include <unistd.h>\n\nint main() {\n    srand(getpid() ^ time(NULL));\n    // rest of the code\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following libraries:\n\n- cstdlib\n- ctime\n- unistd.h\n\n## References\n\n- [CWE-330: Use of Insufficiently Random Values](https://cwe.mitre.org/data/definitions/330.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS149435"
+                ]
+              }
+            },
+            {
+              "id": "4d8eb367-819e-3ed4-87ca-74a16e23a34c",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, using system time or a static value to seed randomness can lead to predictable random numbers, which is a security vulnerability. This is because if an attacker can predict the seed value, they can predict the sequence of random numbers that will be generated, which can lead to various types of attacks, such as brute force attacks.\n\nIn the given code example, `srand(0)` is used to seed the random number generator. This is a static value, which means that every time the program is run, the same sequence of random numbers will be generated. This makes the random numbers predictable, which is a security vulnerability.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should use a truly random value to seed the random number generator. One way to do this is to use the current time, but this is still predictable to some extent. A better way is to use a value that is more difficult for an attacker to predict, such as the process ID or a value from a hardware random number generator.\n\n## Source Code Fix Recommendation\n\nHere is a code fix that uses the process ID to seed the random number generator:\n\n```cpp\n#include <cstdlib>\n#include <ctime>\n#include <unistd.h>\n\nint main() {\n    srand(getpid() ^ time(NULL));\n    // rest of the code\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following libraries:\n\n- cstdlib\n- ctime\n- unistd.h\n\n## References\n\n- [CWE-330: Use of Insufficiently Random Values](https://cwe.mitre.org/data/definitions/330.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS149435"
+                ]
+              }
+            },
+            {
+              "id": "3acf40ff-f63d-39bd-b519-0bf4189dbb40",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "0248a4bc-32b6-36ae-b0b0-d22bb2d0bcfc",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "4f4f6d54-a8f9-3d97-8c09-7f0804da67ec",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "e4937eb8-3f67-35ba-a2ac-69b306bc2b81",
+              "help": {
+                "text": "",
+                "markdown": "This finding is classified as 'Likely Vulnerable' because the result of a malloc call is used (deref) immediately after allocation without a preceding null pointer check. The absence of a null guard before the first use of the allocated pointer 'alpha' increases the risk of a null dereference if malloc fails. The presence of a cast does not mitigate this risk. The pointer is freed in the same method and is also passed to another call, but these do not address the core issue. The verdict is 'GENUINE', indicating a high-confidence, actionable vulnerability.\n\n## In Context Remediation\nTo prevent a possible null pointer dereference after memory allocation, always check the result of malloc before using the allocated memory. For example, after allocating memory for 'alpha', add a null check and handle the error appropriately:\n\n```c\nalpha = (hipComplex*)malloc(sizeof(hipComplex));\nif (alpha == NULL) {\n    // Handle allocation failure, e.g., return an error code or clean up\n    return HIPSPARSE_STATUS_ALLOC_FAILED;\n}\n```\nThis ensures that if malloc fails and returns NULL, the program does not attempt to dereference a null pointer, which would lead to undefined behavior or a crash.\n\n## References\n- [OWASP C-Based Toolchain Hardening Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)\n- [CWE-690: Unchecked Return Value to NULL Pointer Dereference](https://cwe.mitre.org/data/definitions/690.html)\n\n___\n"
+              },
+              "properties": {
+                "tags": [
+                  "DS161085"
+                ]
+              }
+            },
+            {
+              "id": "5b99da85-77a1-3776-a693-dade0067411f",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, the vulnerability \"Avoid Using Non-Cryptographic or Weak Random Number Generators\" refers to the use of weak or non-cryptographic random number generators that can lead to predictable or easily guessable values. This can be exploited by attackers to predict the outcome of the random number generator, leading to potential security risks.\n\nIn the given code snippet, `rand()` is a weak random number generator as it uses a linear congruential generator which is not suitable for cryptographic purposes.\n\n```cpp\nrng = col_begin + rand() % col_nnz;\n```\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use a strong cryptographic random number generator. In C++, the `<random>` library provides several such generators. \n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the code snippet using the Mersenne Twister engine, a strong random number generator provided by the `<random>` library in C++.\n\n```cpp\n#include <random>\n\nstd::random_device rd;\nstd::mt19937 gen(rd());\nstd::uniform_int_distribution<> dis(col_begin, col_nnz);\n\nrng = dis(gen);\n```\n\n## Library Dependencies\n\nThe code example requires the `<random>` library.\n\n## References\n\n- [CWE-338: Use of Cryptographically Weak PRNG](https://cwe.mitre.org/data/definitions/338.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS148264",
+                  "5b99da85-77a1-3776-a693-dade0067411f"
+                ]
+              }
+            },
+            {
+              "id": "2522c551-8d76-3dac-a33c-978a7ea17592",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, the vulnerability \"Avoid Using Non-Cryptographic or Weak Random Number Generators\" refers to the use of weak or non-cryptographic random number generators that can lead to predictable or easily guessable values. This can be exploited by attackers to predict the outcome of the random number generator, leading to potential security risks.\n\nIn the given code snippet, `rand()` is a weak random number generator as it uses a linear congruential generator which is not suitable for cryptographic purposes.\n\n```cpp\nrng = col_begin + rand() % col_nnz;\n```\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use a strong cryptographic random number generator. In C++, the `<random>` library provides several such generators. \n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the code snippet using the Mersenne Twister engine, a strong random number generator provided by the `<random>` library in C++.\n\n```cpp\n#include <random>\n\nstd::random_device rd;\nstd::mt19937 gen(rd());\nstd::uniform_int_distribution<> dis(col_begin, col_nnz);\n\nrng = dis(gen);\n```\n\n## Library Dependencies\n\nThe code example requires the `<random>` library.\n\n## References\n\n- [CWE-338: Use of Cryptographically Weak PRNG](https://cwe.mitre.org/data/definitions/338.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS148264",
+                  "2522c551-8d76-3dac-a33c-978a7ea17592"
+                ]
+              }
+            },
+            {
+              "id": "e1b7e8c9-8aaa-3261-a0c8-5cc33632456e",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `malloc` function in C is used to dynamically allocate memory at runtime. However, it can lead to vulnerabilities if not used properly. The specific vulnerability in the provided code is that the return value of `malloc` is not checked for `NULL`. If `malloc` fails to allocate the requested memory, it returns `NULL`, and any attempt to use a `NULL` pointer will lead to undefined behavior, often resulting in a program crash.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always check the return value of `malloc` before using the allocated memory. If `malloc` returns `NULL`, take appropriate action such as cleaning up resources, logging an error message, and/or terminating the program.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code:\n\n```cpp\nalpha  = (hipDoubleComplex*)malloc(sizeof(hipDoubleComplex));\nif (alpha == NULL) {\n    // handle error, e.g., cleanup and return/exit\n    fprintf(stderr, \"Memory allocation failed!\\n\");\n    exit(1);\n}\n```\n\n## Library Dependencies\n\nThe provided code appears to depend on the following libraries:\n\n- `stdlib.h` for `malloc` and `exit`\n- `stdio.h` for `fprintf`\n- `hip/hip_complex.h` for `hipDoubleComplex` (assuming this is a ROCm HIP type)\n\n## OWASP and CWE Links\n\n- [CWE-690: Unchecked Return Value to NULL Pointer Dereference](https://cwe.mitre.org/data/definitions/690.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS161085"
+                ]
+              }
+            },
+            {
+              "id": "70e512f4-3708-3911-af51-75f7b2cda3d3",
+              "help": {
+                "text": "",
+                "markdown": "This finding is classified as 'Likely Vulnerable: malloc result used without null check (possible null deref)', and the call verdict is 'GENUINE', indicating a high-confidence, actionable issue. The code allocates memory using malloc(sizeof(double)) and immediately dereferences the result (first use: deref) without checking if the allocation succeeded (hasNullGuardBeforeUse: False). This can lead to a null pointer dereference if malloc fails. The presence of a cast does not mitigate the risk. The pointer is freed in the method, but this does not address the immediate risk of dereferencing a null pointer. No zero guard or overflow guard is present, but for this allocation size, the main risk is null dereference.\n\n## In Context Remediation\nAlways check the result of malloc before dereferencing the pointer. If malloc fails, it returns NULL, and dereferencing it will cause undefined behavior or a crash. Add a null check immediately after the allocation and handle the error appropriately, such as returning an error code or cleaning up resources.\n\n```c\nalpha = (double*)malloc(sizeof(double));\nif (alpha == NULL) {\n    // Handle allocation failure: log, cleanup, and return error\n    return HIPSPARSE_STATUS_ALLOC_FAILED;\n}\n// Safe to dereference alpha here\n```\n\n## References\n- [OWASP C-Based Toolchain Hardening Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-690: Unchecked Return Value to NULL Pointer Dereference](https://cwe.mitre.org/data/definitions/690.html)\n- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)\n\n\n___\n"
+              },
+              "properties": {
+                "tags": [
+                  "DS161085"
+                ]
+              }
+            },
+            {
+              "id": "c53dd68a-dbd3-3978-b0e9-86d9b4881e7c",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "89ae27d6-c5af-3edc-9394-67d4828667be",
+              "help": {
+                "text": "",
+                "markdown": "This finding is classified as 'Likely Vulnerable: malloc result used without null check (possible null deref)', and the call verdict is 'GENUINE', indicating a high-confidence, actionable issue. The code allocates memory using malloc(sizeof(float)) and immediately dereferences the result (first use: deref) without checking if the allocation succeeded (hasNullGuardBeforeUse: False). This can lead to a null pointer dereference if malloc fails. The presence of a cast does not mitigate the risk. The pointer is freed in the method and also passed to another call, but these do not affect the core vulnerability. No zero guard or overflow guard is present, but for this allocation size, the main risk is null dereference. Therefore, this is a genuine vulnerability.\n\n## In Context Remediation\nTo prevent a possible null pointer dereference after memory allocation, always check the result of malloc before using the allocated memory. For example, if your original code is:\n\n```c\nalpha = (float*)malloc(sizeof(float));\n*alpha = 1.0f;\n```\n\nYou should add a null check before dereferencing:\n\n```c\nalpha = (float*)malloc(sizeof(float));\nif (alpha == NULL) {\n    // Handle allocation failure, e.g., return error or clean up\n    return HIPSPARSE_STATUS_ALLOC_FAILED;\n}\n*alpha = 1.0f;\n```\n\nThis ensures that if malloc fails and returns NULL, the code does not attempt to dereference a null pointer, which would cause undefined behavior or a crash.\n\n## References\n- [OWASP C-Based Toolchain Hardening Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)\n- [CWE-690: Unchecked Return Value to NULL Pointer Dereference](https://cwe.mitre.org/data/definitions/690.html)\n\n___\n"
+              },
+              "properties": {
+                "tags": [
+                  "DS161085"
+                ]
+              }
+            },
+            {
+              "id": "a1959fab-9ccc-351c-b7cd-f002aa4dbffe",
+              "help": {
+                "text": "",
+                "markdown": "This finding is classified as 'Likely Vulnerable' because the result of a malloc call is used (dereferenced) immediately after allocation without checking if the allocation succeeded (i.e., without verifying that the returned pointer is not NULL). The absence of a null guard before the first use of the allocated pointer increases the risk of a null pointer dereference, which can lead to undefined behavior or program crashes. The allocation size is a single object (sizeof(hipDoubleComplex)), and there are no zero or overflow guards, but the primary risk here is the unchecked dereference. The pointer is eventually freed in the method, but this does not mitigate the risk of dereferencing a null pointer. The presence of a cast does not affect the vulnerability. This is a common and well-known issue in C/C++ memory management.\n\n## In Context Remediation\nTo prevent a possible null pointer dereference after memory allocation, always check the result of malloc before using the allocated memory. For example, if your original code is:\n\n```c\nalpha = (hipDoubleComplex*)malloc(sizeof(hipDoubleComplex));\n*alpha = ...; // immediate dereference\n```\n\nYou should add a null check before dereferencing:\n\n```c\nalpha = (hipDoubleComplex*)malloc(sizeof(hipDoubleComplex));\nif (alpha == NULL) {\n    // Handle allocation failure, e.g., return error or clean up\n    return HIPSPARSE_STATUS_ALLOC_FAILED;\n}\n*alpha = ...; // safe to dereference\n```\n\nThis ensures that if malloc fails and returns NULL, the program does not attempt to dereference a null pointer, which would cause undefined behavior or a crash.\n\n## References\n- [OWASP C-Based Toolchain Hardening Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)\n- [CWE-690: Unchecked Return Value to NULL Pointer Dereference](https://cwe.mitre.org/data/definitions/690.html)\n\n___\n"
+              },
+              "properties": {
+                "tags": [
+                  "DS161085"
+                ]
+              }
+            },
+            {
+              "id": "df78c3aa-3074-3338-ab3a-9f20a911da5d",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "a7fefdfa-b8e5-37d9-a43a-b03c9cc2c94e",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "db037e87-911c-3743-9a85-58b743a44aee",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "17cae521-290b-3d71-82c4-436ec9a8b474",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "83121edd-d17e-306b-bf4a-344972863d85",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, using system time or a static value to seed randomness can lead to predictable random numbers, which is a security vulnerability. This is because if an attacker can predict the seed value, they can predict the sequence of random numbers that will be generated, which can lead to various types of attacks, such as brute force attacks.\n\nIn the given code example, `srand(0)` is used to seed the random number generator. This is a static value, which means that every time the program is run, the same sequence of random numbers will be generated. This makes the random numbers predictable, which is a security vulnerability.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should use a truly random value to seed the random number generator. One way to do this is to use the current time, but this is still predictable to some extent. A better way is to use a value that is more difficult for an attacker to predict, such as the process ID or a value from a hardware random number generator.\n\n## Source Code Fix Recommendation\n\nHere is a code fix that uses the process ID to seed the random number generator:\n\n```cpp\n#include <cstdlib>\n#include <ctime>\n#include <unistd.h>\n\nint main() {\n    srand(getpid() ^ time(NULL));\n    // rest of the code\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following libraries:\n\n- cstdlib\n- ctime\n- unistd.h\n\n## References\n\n- [CWE-330: Use of Insufficiently Random Values](https://cwe.mitre.org/data/definitions/330.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS149435"
+                ]
+              }
+            },
+            {
+              "id": "70c2c5d4-1482-3cf9-b536-05fe5567b85a",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "234218e3-2a54-3a86-a01c-1ae4a74eba3d",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ programming language refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other problems. These functions are often prohibited in secure coding standards. One such function is `fprintf`.\n\nThe `fprintf` function can lead to vulnerabilities if not used correctly. It can cause format string vulnerabilities if the format string is not a constant, or if it's composed dynamically, it can lead to buffer overflows if the output is larger than the buffer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to `fprintf` such as `snprintf` or `vsnprintf`. These functions include the size of the buffer as an argument, which can prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nInstead of using `fprintf`, use `snprintf` or `vsnprintf`. Here is an example:\n\n```cpp\n#include <stdio.h>\n\nvoid safe_function(const char* format, ...) {\n    char buffer[1024];\n    va_list args;\n    va_start(args, format);\n    vsnprintf(buffer, sizeof(buffer), format, args);\n    va_end(args);\n    // Now buffer contains the formatted string.\n    // You can write it to file with fwrite or similar\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- stdio.h\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n\n## CWE\n\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "9c617f9a-8d6c-3592-b8ac-01799a1303d5",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen` function in C++ is used to find the length of a string. However, it can lead to a vulnerability if the string is not null-terminated. The `strlen` function counts characters until it encounters a null character. If the string is not null-terminated, `strlen` will continue reading memory beyond the intended boundary, which can lead to buffer overflows, crashes, or other undefined behavior.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. This can be done by initializing your strings with a null character or by manually adding a null character at the end of your string. Also, consider using safer alternatives to `strlen` such as `strnlen`, which takes a maximum length parameter and will not read beyond this length.\n\n## Source Code Fix Recommendation\n\nInstead of:\n\n```cpp\nlen = strlen(name);\n```\n\nYou can use:\n\n```cpp\nlen = strnlen(name, MAX_LENGTH);\n```\n\nWhere `MAX_LENGTH` is the maximum expected length of your string.\n\n## Library Dependencies\n\nThe `strlen` function is part of the C standard library, so you need to include the `cstring` header:\n\n```cpp\n#include <cstring>\n```\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [Common Weakness Enumeration (CWE-126)](https://cwe.mitre.org/data/definitions/126.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "8e0373c5-73ab-3d48-8370-5c4b60c2c81f",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen` function in C++ is used to find the length of a string. However, it can lead to a vulnerability if the string is not null-terminated. The `strlen` function counts characters until it encounters a null character. If the string is not null-terminated, `strlen` will continue reading memory beyond the intended boundary, which can lead to buffer overflows, crashes, or other undefined behavior.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. This can be done by initializing your strings with a null character or by manually adding a null character at the end of your string. Also, consider using safer alternatives to `strlen` such as `strnlen`, which takes a maximum length parameter and will not read beyond this length.\n\n## Source Code Fix Recommendation\n\nInstead of:\n\n```cpp\nlen = strlen(name);\n```\n\nYou can use:\n\n```cpp\nlen = strnlen(name, MAX_LENGTH);\n```\n\nWhere `MAX_LENGTH` is the maximum expected length of your string.\n\n## Library Dependencies\n\nThe `strlen` function is part of the C standard library, so you need to include the `cstring` header:\n\n```cpp\n#include <cstring>\n```\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [Common Weakness Enumeration (CWE-126)](https://cwe.mitre.org/data/definitions/126.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "d9625be7-90b6-306e-baca-f22aa15f527b",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nIn C++ programming, using system time or a static value to seed randomness can lead to predictable random numbers, which is a security vulnerability. This is because if an attacker can predict the seed value, they can predict the sequence of random numbers that will be generated, which can lead to various types of attacks, such as brute force attacks.\n\nIn the given code example, `srand(0)` is used to seed the random number generator. This is a static value, which means that every time the program is run, the same sequence of random numbers will be generated. This makes the random numbers predictable, which is a security vulnerability.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should use a truly random value to seed the random number generator. One way to do this is to use the current time, but this is still predictable to some extent. A better way is to use a value that is more difficult for an attacker to predict, such as the process ID or a value from a hardware random number generator.\n\n## Source Code Fix Recommendation\n\nHere is a code fix that uses the process ID to seed the random number generator:\n\n```cpp\n#include <cstdlib>\n#include <ctime>\n#include <unistd.h>\n\nint main() {\n    srand(getpid() ^ time(NULL));\n    // rest of the code\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following libraries:\n\n- cstdlib\n- ctime\n- unistd.h\n\n## References\n\n- [CWE-330: Use of Insufficiently Random Values](https://cwe.mitre.org/data/definitions/330.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS149435"
                 ]
               }
             }
@@ -179,30 +545,30 @@
       "language": "en-US",
       "results": [
         {
-          "ruleId": "glog-e3d025d3-3540-4f94-bb87-0777869693a4",
+          "ruleId": "e06a450b-bf4c-357e-b0f3-2f0f503422c6",
           "kind": "fail",
           "level": "note",
           "message": {
-            "text": "\"Detected Issue with C Function (malloc)\""
+            "text": "Problematic C function detected (memcpy)"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
+                  "uri": "library/src/amd_detail/hipsparse_auxiliary.cpp"
                 },
                 "region": {
-                  "startLine": 386,
-                  "startColumn": 26,
-                  "endLine": 386,
-                  "endColumn": 47,
-                  "charOffset": 14732,
-                  "charLength": 21,
+                  "startLine": 99,
+                  "startColumn": 4,
+                  "endLine": 99,
+                  "endColumn": 38,
+                  "charOffset": 3179,
+                  "charLength": 34,
                   "snippet": {
-                    "text": "malloc(sizeof(double)",
+                    "text": "memcpy(hipsparse_rev, v, sizeof(v)",
                     "rendered": {
-                      "text": "malloc(sizeof(double)",
-                      "markdown": "`malloc(sizeof(double)`"
+                      "text": "memcpy(hipsparse_rev, v, sizeof(v)",
+                      "markdown": "`memcpy(hipsparse_rev, v, sizeof(v)`"
                     }
                   },
                   "sourceLanguage": "cpp"
@@ -213,21 +579,21 @@
           "fixes": [
             {
               "description": {
-                "text": "If the value provided to malloc is the result of unsafe integer math, it can result in an exploitable condition. "
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
               },
               "artifactChanges": [
                 {
                   "artifactLocation": {
-                    "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
+                    "uri": "library/src/amd_detail/hipsparse_auxiliary.cpp"
                   },
                   "replacements": [
                     {
                       "deletedRegion": {
-                        "charOffset": 14732,
-                        "charLength": 21
+                        "charOffset": 3179,
+                        "charLength": 34
                       },
                       "insertedContent": {
-                        "text": "calloc(<number of elements>, <size of each element>)"
+                        "text": "memcpy_s(hipsparse_rev, <size of hipsparse_rev>,  v,  sizeof(v)"
                       }
                     }
                   ]
@@ -244,11 +610,836 @@
           }
         },
         {
-          "ruleId": "glog-d38b9a1a-7d1a-4d31-9d5b-c638efa881cb",
+          "ruleId": "3e4be113-600b-3e71-b993-58ce96cbc798",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_sparse_to_dense_coo.hpp"
+                },
+                "region": {
+                  "startLine": 155,
+                  "startColumn": 8,
+                  "endLine": 155,
+                  "endColumn": 15,
+                  "charOffset": 6299,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "3de19b7f-8172-3c4b-9c5e-824f298bbd8e",
           "kind": "fail",
           "level": "note",
           "message": {
-            "text": "Detected Vulnerability in C Function (malloc)"
+            "text": "Problematic C function detected (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "library/src/nvidia_detail/hipsparse_auxiliary.cpp"
+                },
+                "region": {
+                  "startLine": 81,
+                  "startColumn": 4,
+                  "endLine": 81,
+                  "endColumn": 38,
+                  "charOffset": 2767,
+                  "charLength": 34,
+                  "snippet": {
+                    "text": "memcpy(hipsparse_rev, v, sizeof(v)",
+                    "rendered": {
+                      "text": "memcpy(hipsparse_rev, v, sizeof(v)",
+                      "markdown": "`memcpy(hipsparse_rev, v, sizeof(v)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "library/src/nvidia_detail/hipsparse_auxiliary.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 2767,
+                        "charLength": 34
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(hipsparse_rev, <size of hipsparse_rev>,  v,  sizeof(v)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "d604b964-ae57-3d89-8f01-3ce8de612d43",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/benchmarks/hipsparse_bench_app.cpp"
+                },
+                "region": {
+                  "startLine": 316,
+                  "startColumn": 32,
+                  "endLine": 316,
+                  "endColumn": 37,
+                  "charOffset": 11017,
+                  "charLength": 5,
+                  "snippet": {
+                    "text": "ctime",
+                    "rendered": {
+                      "text": "ctime",
+                      "markdown": "`ctime`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "f0fa3182-777d-376d-9b29-27eb2b3120f9",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_sddmm_csr.hpp"
+                },
+                "region": {
+                  "startLine": 224,
+                  "startColumn": 8,
+                  "endLine": 224,
+                  "endColumn": 15,
+                  "charOffset": 9962,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "e6933e0c-bf8f-305c-9aad-7f0298e6c746",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_sparse_to_dense_csc.hpp"
+                },
+                "region": {
+                  "startLine": 162,
+                  "startColumn": 8,
+                  "endLine": 162,
+                  "endColumn": 15,
+                  "charOffset": 6928,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "7b6e0db1-40f9-3d60-a72a-c6383bb19a93",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spmm_csr.hpp"
+                },
+                "region": {
+                  "startLine": 242,
+                  "startColumn": 8,
+                  "endLine": 242,
+                  "endColumn": 15,
+                  "charOffset": 10477,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "1c088e1c-884e-3ac8-aff3-62e82c94b614",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spmm_csc.hpp"
+                },
+                "region": {
+                  "startLine": 240,
+                  "startColumn": 8,
+                  "endLine": 240,
+                  "endColumn": 15,
+                  "charOffset": 10455,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "6f82ab75-0fe0-3b95-9c08-2f5a79f4525d",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spsm_coo.hpp"
+                },
+                "region": {
+                  "startLine": 224,
+                  "startColumn": 8,
+                  "endLine": 224,
+                  "endColumn": 15,
+                  "charOffset": 9785,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "d6956ec4-4d48-316d-9a1d-21228179a9dd",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "Avoid using system time or static value for seeding randomness."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_dense_to_sparse_csr.hpp"
+                },
+                "region": {
+                  "startLine": 192,
+                  "startColumn": 4,
+                  "endLine": 192,
+                  "endColumn": 12,
+                  "charOffset": 7909,
+                  "charLength": 8,
+                  "snippet": {
+                    "text": "srand(0)",
+                    "rendered": {
+                      "text": "srand(0)",
+                      "markdown": "`srand(0)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Critical",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "Cryptography.WeakRandomness"
+            ]
+          }
+        },
+        {
+          "ruleId": "1ea99f54-abe5-319a-b076-a594abdf5f9b",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spsv_coo.hpp"
+                },
+                "region": {
+                  "startLine": 194,
+                  "startColumn": 8,
+                  "endLine": 194,
+                  "endColumn": 15,
+                  "charOffset": 8571,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "11245c4a-71a0-35cb-b7a8-261aa80af178",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "Avoid using system time or static value for seeding randomness."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_prune_dense2csr_by_percentage.hpp"
+                },
+                "region": {
+                  "startLine": 426,
+                  "startColumn": 4,
+                  "endLine": 426,
+                  "endColumn": 12,
+                  "charOffset": 21868,
+                  "charLength": 8,
+                  "snippet": {
+                    "text": "srand(0)",
+                    "rendered": {
+                      "text": "srand(0)",
+                      "markdown": "`srand(0)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Critical",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "Cryptography.WeakRandomness"
+            ]
+          }
+        },
+        {
+          "ruleId": "4bd13cd2-b323-3154-8875-ba82874c2143",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spsm_csr.hpp"
+                },
+                "region": {
+                  "startLine": 226,
+                  "startColumn": 8,
+                  "endLine": 226,
+                  "endColumn": 15,
+                  "charOffset": 9890,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "ae234266-b36e-3716-bdfa-21ba6f27b78e",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spmv_csr.hpp"
+                },
+                "region": {
+                  "startLine": 208,
+                  "startColumn": 8,
+                  "endLine": 208,
+                  "endColumn": 15,
+                  "charOffset": 9358,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "d2b5b19c-4fb7-36cc-a0ee-0d17c88efcf6",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spmm_batched_coo.hpp"
+                },
+                "region": {
+                  "startLine": 227,
+                  "startColumn": 8,
+                  "endLine": 227,
+                  "endColumn": 15,
+                  "charOffset": 9044,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "fcac4e12-4325-3d82-b24f-b89fc16ce25e",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_sddmm_coo_aos.hpp"
+                },
+                "region": {
+                  "startLine": 218,
+                  "startColumn": 8,
+                  "endLine": 218,
+                  "endColumn": 15,
+                  "charOffset": 9705,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "6b976003-2e6d-3175-8798-236eacf85ef8",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "Avoid using system time or static value for seeding randomness."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_csx2dense.hpp"
+                },
+                "region": {
+                  "startLine": 146,
+                  "startColumn": 4,
+                  "endLine": 146,
+                  "endColumn": 12,
+                  "charOffset": 6597,
+                  "charLength": 8,
+                  "snippet": {
+                    "text": "srand(0)",
+                    "rendered": {
+                      "text": "srand(0)",
+                      "markdown": "`srand(0)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Critical",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "Cryptography.WeakRandomness"
+            ]
+          }
+        },
+        {
+          "ruleId": "4d8eb367-819e-3ed4-87ca-74a16e23a34c",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "Avoid using system time or static value for seeding randomness."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_prune_dense2csr.hpp"
+                },
+                "region": {
+                  "startLine": 299,
+                  "startColumn": 4,
+                  "endLine": 299,
+                  "endColumn": 12,
+                  "charOffset": 13249,
+                  "charLength": 8,
+                  "snippet": {
+                    "text": "srand(0)",
+                    "rendered": {
+                      "text": "srand(0)",
+                      "markdown": "`srand(0)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Critical",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "Cryptography.WeakRandomness"
+            ]
+          }
+        },
+        {
+          "ruleId": "3acf40ff-f63d-39bd-b519-0bf4189dbb40",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_csr2csc_ex2.hpp"
+                },
+                "region": {
+                  "startLine": 303,
+                  "startColumn": 8,
+                  "endLine": 303,
+                  "endColumn": 15,
+                  "charOffset": 17416,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "0248a4bc-32b6-36ae-b0b0-d22bb2d0bcfc",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spsv_csr.hpp"
+                },
+                "region": {
+                  "startLine": 196,
+                  "startColumn": 8,
+                  "endLine": 196,
+                  "endColumn": 15,
+                  "charOffset": 8676,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "4f4f6d54-a8f9-3d97-8c09-7f0804da67ec",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spmv_coo.hpp"
+                },
+                "region": {
+                  "startLine": 183,
+                  "startColumn": 8,
+                  "endLine": 183,
+                  "endColumn": 15,
+                  "charOffset": 8005,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "e4937eb8-3f67-35ba-a2ac-69b306bc2b81",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Problematic C function detected (malloc)"
           },
           "locations": [
             {
@@ -309,217 +1500,7 @@
           }
         },
         {
-          "ruleId": "glog-941a5544-6951-4da7-9be9-23e3cd0534bf",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Detected Vulnerability in C Function (malloc)"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
-                },
-                "region": {
-                  "startLine": 79,
-                  "startColumn": 36,
-                  "endLine": 79,
-                  "endColumn": 67,
-                  "charOffset": 3468,
-                  "charLength": 31,
-                  "snippet": {
-                    "text": "malloc(sizeof(hipDoubleComplex)",
-                    "rendered": {
-                      "text": "malloc(sizeof(hipDoubleComplex)",
-                      "markdown": "`malloc(sizeof(hipDoubleComplex)`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "If the value provided to malloc is the result of unsafe integer math, it can result in an exploitable condition. "
-              },
-              "artifactChanges": [
-                {
-                  "artifactLocation": {
-                    "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
-                  },
-                  "replacements": [
-                    {
-                      "deletedRegion": {
-                        "charOffset": 3468,
-                        "charLength": 31
-                      },
-                      "insertedContent": {
-                        "text": "calloc(<number of elements>, <size of each element>)"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "BestPractice",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "API.DangerousAPI.ProblematicFunction"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-de680f7a-8e5b-4587-a981-7b1d9a938688",
-          "kind": "fail",
-          "level": "error",
-          "message": {
-            "text": "Avoid seeding randomness using system time or a fixed value."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "clients/include/testing_dense_to_sparse_csr.hpp"
-                },
-                "region": {
-                  "startLine": 192,
-                  "startColumn": 4,
-                  "endLine": 192,
-                  "endColumn": 12,
-                  "charOffset": 7909,
-                  "charLength": 8,
-                  "snippet": {
-                    "text": "srand(0)",
-                    "rendered": {
-                      "text": "srand(0)",
-                      "markdown": "`srand(0)`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "Critical",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "Cryptography.WeakRandomness"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-4e41e5a0-1ff1-4654-9dd2-6fadef10941c",
-          "kind": "fail",
-          "level": "error",
-          "message": {
-            "text": "Avoid seeding randomness using system time or a fixed value."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "clients/include/testing_nnz.hpp"
-                },
-                "region": {
-                  "startLine": 204,
-                  "startColumn": 4,
-                  "endLine": 204,
-                  "endColumn": 12,
-                  "charOffset": 9248,
-                  "charLength": 8,
-                  "snippet": {
-                    "text": "srand(0)",
-                    "rendered": {
-                      "text": "srand(0)",
-                      "markdown": "`srand(0)`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "Critical",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "Cryptography.WeakRandomness"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-e07adf1d-2ace-4b25-93fe-741df3578920",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "\"Detected Issue with C Function (malloc)\""
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
-                },
-                "region": {
-                  "startLine": 230,
-                  "startColumn": 25,
-                  "endLine": 230,
-                  "endColumn": 45,
-                  "charOffset": 9063,
-                  "charLength": 20,
-                  "snippet": {
-                    "text": "malloc(sizeof(float)",
-                    "rendered": {
-                      "text": "malloc(sizeof(float)",
-                      "markdown": "`malloc(sizeof(float)`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "If the value provided to malloc is the result of unsafe integer math, it can result in an exploitable condition. "
-              },
-              "artifactChanges": [
-                {
-                  "artifactLocation": {
-                    "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
-                  },
-                  "replacements": [
-                    {
-                      "deletedRegion": {
-                        "charOffset": 9063,
-                        "charLength": 20
-                      },
-                      "insertedContent": {
-                        "text": "calloc(<number of elements>, <size of each element>)"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "BestPractice",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "API.DangerousAPI.ProblematicFunction"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-cb4100da-f29c-4fd5-9b0a-31980f942410",
+          "ruleId": "e1b7e8c9-8aaa-3261-a0c8-5cc33632456e",
           "kind": "fail",
           "level": "note",
           "message": {
@@ -584,30 +1565,95 @@
           }
         },
         {
-          "ruleId": "glog-d4b9cdf2-2bc1-4ef0-9a47-c239aa55e832",
+          "ruleId": "70e512f4-3708-3911-af51-75f7b2cda3d3",
           "kind": "fail",
-          "level": "error",
+          "level": "note",
           "message": {
-            "text": "\"Avoid Using Weak or Non-Cryptographic Random Number Generators\""
+            "text": "Problematic C function detected (malloc)"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "clients/samples/example_csrmv.cpp"
+                  "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
                 },
                 "region": {
-                  "startLine": 94,
-                  "startColumn": 50,
-                  "endLine": 94,
-                  "endColumn": 58,
-                  "charOffset": 3623,
-                  "charLength": 8,
+                  "startLine": 386,
+                  "startColumn": 26,
+                  "endLine": 386,
+                  "endColumn": 47,
+                  "charOffset": 14732,
+                  "charLength": 21,
                   "snippet": {
-                    "text": "RAND_MAX",
+                    "text": "malloc(sizeof(double)",
                     "rendered": {
-                      "text": "RAND_MAX",
-                      "markdown": "`RAND_MAX`"
+                      "text": "malloc(sizeof(double)",
+                      "markdown": "`malloc(sizeof(double)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If the value provided to malloc is the result of unsafe integer math, it can result in an exploitable condition. "
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 14732,
+                        "charLength": 21
+                      },
+                      "insertedContent": {
+                        "text": "calloc(<number of elements>, <size of each element>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "c53dd68a-dbd3-3978-b0e9-86d9b4881e7c",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_sddmm_coo.hpp"
+                },
+                "region": {
+                  "startLine": 221,
+                  "startColumn": 8,
+                  "endLine": 221,
+                  "endColumn": 15,
+                  "charOffset": 9829,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
                     }
                   },
                   "sourceLanguage": "cpp"
@@ -616,38 +1662,168 @@
             }
           ],
           "properties": {
-            "DevSkimSeverity": "Important",
+            "DevSkimSeverity": "Moderate",
             "DevSkimConfidence": "High",
             "tags": [
-              "Cryptography.PRNG.Weak"
+              "API.DangerousAPI.BannedFunction"
             ]
           }
         },
         {
-          "ruleId": "glog-550a5fca-bc67-4bf0-bb37-5a9192a4a3a7",
+          "ruleId": "89ae27d6-c5af-3edc-9394-67d4828667be",
           "kind": "fail",
-          "level": "error",
+          "level": "note",
           "message": {
-            "text": "\"Avoid Using Weak or Non-Cryptographic Random Number Generators\""
+            "text": "Problematic C function detected (malloc)"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "clients/samples/example_csrmv.cpp"
+                  "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
                 },
                 "region": {
-                  "startLine": 94,
-                  "startColumn": 40,
-                  "endLine": 94,
+                  "startLine": 230,
+                  "startColumn": 25,
+                  "endLine": 230,
                   "endColumn": 45,
-                  "charOffset": 3613,
-                  "charLength": 5,
+                  "charOffset": 9063,
+                  "charLength": 20,
                   "snippet": {
-                    "text": "rand(",
+                    "text": "malloc(sizeof(float)",
                     "rendered": {
-                      "text": "rand(",
-                      "markdown": "`rand(`"
+                      "text": "malloc(sizeof(float)",
+                      "markdown": "`malloc(sizeof(float)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If the value provided to malloc is the result of unsafe integer math, it can result in an exploitable condition. "
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 9063,
+                        "charLength": 20
+                      },
+                      "insertedContent": {
+                        "text": "calloc(<number of elements>, <size of each element>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "a1959fab-9ccc-351c-b7cd-f002aa4dbffe",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Problematic C function detected (malloc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
+                },
+                "region": {
+                  "startLine": 79,
+                  "startColumn": 36,
+                  "endLine": 79,
+                  "endColumn": 67,
+                  "charOffset": 3468,
+                  "charLength": 31,
+                  "snippet": {
+                    "text": "malloc(sizeof(hipDoubleComplex)",
+                    "rendered": {
+                      "text": "malloc(sizeof(hipDoubleComplex)",
+                      "markdown": "`malloc(sizeof(hipDoubleComplex)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If the value provided to malloc is the result of unsafe integer math, it can result in an exploitable condition. "
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "library/src/amd_detail/extra/hipsparse_csrgemm.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 3468,
+                        "charLength": 31
+                      },
+                      "insertedContent": {
+                        "text": "calloc(<number of elements>, <size of each element>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "df78c3aa-3074-3338-ab3a-9f20a911da5d",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spmm_batched_csc.hpp"
+                },
+                "region": {
+                  "startLine": 239,
+                  "startColumn": 8,
+                  "endLine": 239,
+                  "endColumn": 15,
+                  "charOffset": 9710,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
                     }
                   },
                   "sourceLanguage": "cpp"
@@ -656,38 +1832,158 @@
             }
           ],
           "properties": {
-            "DevSkimSeverity": "Important",
+            "DevSkimSeverity": "Moderate",
             "DevSkimConfidence": "High",
             "tags": [
-              "Cryptography.PRNG.Weak"
+              "API.DangerousAPI.BannedFunction"
             ]
           }
         },
         {
-          "ruleId": "glog-ece8f10a-2b99-4c39-b20f-afc63128c779",
+          "ruleId": "a7fefdfa-b8e5-37d9-a43a-b03c9cc2c94e",
           "kind": "fail",
-          "level": "error",
+          "level": "warning",
           "message": {
-            "text": "\"Avoid Using Weak or Non-Cryptographic Random Number Generators\""
+            "text": "Detected Prohibited C Function"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "clients/samples/example_hybmv.cpp"
+                  "uri": "clients/include/testing_spgemmreuse_csr.hpp"
                 },
                 "region": {
-                  "startLine": 94,
-                  "startColumn": 50,
-                  "endLine": 94,
-                  "endColumn": 58,
-                  "charOffset": 3637,
+                  "startLine": 249,
+                  "startColumn": 8,
+                  "endLine": 249,
+                  "endColumn": 15,
+                  "charOffset": 11786,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "db037e87-911c-3743-9a85-58b743a44aee",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spgemm_csr.hpp"
+                },
+                "region": {
+                  "startLine": 374,
+                  "startColumn": 8,
+                  "endLine": 374,
+                  "endColumn": 15,
+                  "charOffset": 22458,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "17cae521-290b-3d71-82c4-436ec9a8b474",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_sddmm_csc.hpp"
+                },
+                "region": {
+                  "startLine": 225,
+                  "startColumn": 8,
+                  "endLine": 225,
+                  "endColumn": 15,
+                  "charOffset": 10019,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "83121edd-d17e-306b-bf4a-344972863d85",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "Avoid using system time or static value for seeding randomness."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_dense2csx.hpp"
+                },
+                "region": {
+                  "startLine": 225,
+                  "startColumn": 4,
+                  "endLine": 225,
+                  "endColumn": 12,
+                  "charOffset": 11523,
                   "charLength": 8,
                   "snippet": {
-                    "text": "RAND_MAX",
+                    "text": "srand(0)",
                     "rendered": {
-                      "text": "RAND_MAX",
-                      "markdown": "`RAND_MAX`"
+                      "text": "srand(0)",
+                      "markdown": "`srand(0)`"
                     }
                   },
                   "sourceLanguage": "cpp"
@@ -696,78 +1992,294 @@
             }
           ],
           "properties": {
-            "DevSkimSeverity": "Important",
+            "DevSkimSeverity": "Critical",
             "DevSkimConfidence": "High",
             "tags": [
-              "Cryptography.PRNG.Weak"
+              "Cryptography.WeakRandomness"
             ]
           }
         },
         {
-          "ruleId": "glog-7d363cf4-dabd-4fc3-8644-dcc3df6c95dc",
+          "ruleId": "70c2c5d4-1482-3cf9-b536-05fe5567b85a",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_sparse_to_dense_csr.hpp"
+                },
+                "region": {
+                  "startLine": 162,
+                  "startColumn": 8,
+                  "endLine": 162,
+                  "endColumn": 15,
+                  "charOffset": 6907,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "234218e3-2a54-3a86-a01c-1ae4a74eba3d",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/testing_spmv_coo_aos.hpp"
+                },
+                "region": {
+                  "startLine": 181,
+                  "startColumn": 8,
+                  "endLine": 181,
+                  "endColumn": 15,
+                  "charOffset": 7892,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "fprintf",
+                    "rendered": {
+                      "text": "fprintf",
+                      "markdown": "`fprintf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "9c617f9a-8d6c-3592-b8ac-01799a1303d5",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/display.hpp"
+                },
+                "region": {
+                  "startLine": 575,
+                  "startColumn": 23,
+                  "endLine": 575,
+                  "endColumn": 35,
+                  "charOffset": 13472,
+                  "charLength": 12,
+                  "snippet": {
+                    "text": "strlen(name)",
+                    "rendered": {
+                      "text": "strlen(name)",
+                      "markdown": "`strlen(name)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "clients/include/display.hpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 13472,
+                        "charLength": 12
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(name, <size of name>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "clients/include/display.hpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 13472,
+                        "charLength": 12
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(name, <size of name>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "8e0373c5-73ab-3d48-8370-5c4b60c2c81f",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "clients/include/display.hpp"
+                },
+                "region": {
+                  "startLine": 567,
+                  "startColumn": 23,
+                  "endLine": 567,
+                  "endColumn": 35,
+                  "charOffset": 13202,
+                  "charLength": 12,
+                  "snippet": {
+                    "text": "strlen(name)",
+                    "rendered": {
+                      "text": "strlen(name)",
+                      "markdown": "`strlen(name)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "clients/include/display.hpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 13202,
+                        "charLength": 12
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(name, <size of name>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "clients/include/display.hpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 13202,
+                        "charLength": 12
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(name, <size of name>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "d9625be7-90b6-306e-baca-f22aa15f527b",
           "kind": "fail",
           "level": "error",
           "message": {
-            "text": "\"Avoid Using Weak or Non-Cryptographic Random Number Generators\""
+            "text": "Avoid using system time or static value for seeding randomness."
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "clients/include/testing_cscsort.hpp"
+                  "uri": "clients/include/testing_dense_to_sparse_coo.hpp"
                 },
                 "region": {
-                  "startLine": 168,
-                  "startColumn": 34,
-                  "endLine": 168,
-                  "endColumn": 39,
-                  "charOffset": 6871,
-                  "charLength": 5,
-                  "snippet": {
-                    "text": "rand(",
-                    "rendered": {
-                      "text": "rand(",
-                      "markdown": "`rand(`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "Important",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "Cryptography.PRNG.Weak"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-800c0c25-b66c-4508-b4e2-3ab359bf4f8a",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Detected Vulnerability in C Function (memcpy)"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "library/src/nvidia_detail/hipsparse_auxiliary.cpp"
-                },
-                "region": {
-                  "startLine": 81,
+                  "startLine": 182,
                   "startColumn": 4,
-                  "endLine": 81,
-                  "endColumn": 38,
-                  "charOffset": 2767,
-                  "charLength": 34,
+                  "endLine": 182,
+                  "endColumn": 12,
+                  "charOffset": 7198,
+                  "charLength": 8,
                   "snippet": {
-                    "text": "memcpy(hipsparse_rev, v, sizeof(v)",
+                    "text": "srand(0)",
                     "rendered": {
-                      "text": "memcpy(hipsparse_rev, v, sizeof(v)",
-                      "markdown": "`memcpy(hipsparse_rev, v, sizeof(v)`"
+                      "text": "srand(0)",
+                      "markdown": "`srand(0)`"
                     }
                   },
                   "sourceLanguage": "cpp"
@@ -775,101 +2287,11 @@
               }
             }
           ],
-          "fixes": [
-            {
-              "description": {
-                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
-              },
-              "artifactChanges": [
-                {
-                  "artifactLocation": {
-                    "uri": "library/src/nvidia_detail/hipsparse_auxiliary.cpp"
-                  },
-                  "replacements": [
-                    {
-                      "deletedRegion": {
-                        "charOffset": 2767,
-                        "charLength": 34
-                      },
-                      "insertedContent": {
-                        "text": "memcpy_s(hipsparse_rev, <size of hipsparse_rev>,  v,  sizeof(v)"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
           "properties": {
-            "DevSkimSeverity": "BestPractice",
+            "DevSkimSeverity": "Critical",
             "DevSkimConfidence": "High",
             "tags": [
-              "API.DangerousAPI.ProblematicFunction"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-c568768e-13c3-4316-8fa2-404c18791d3f",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Detected Vulnerability in C Function (memcpy)"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "library/src/amd_detail/hipsparse_auxiliary.cpp"
-                },
-                "region": {
-                  "startLine": 99,
-                  "startColumn": 4,
-                  "endLine": 99,
-                  "endColumn": 38,
-                  "charOffset": 3179,
-                  "charLength": 34,
-                  "snippet": {
-                    "text": "memcpy(hipsparse_rev, v, sizeof(v)",
-                    "rendered": {
-                      "text": "memcpy(hipsparse_rev, v, sizeof(v)",
-                      "markdown": "`memcpy(hipsparse_rev, v, sizeof(v)`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
-              },
-              "artifactChanges": [
-                {
-                  "artifactLocation": {
-                    "uri": "library/src/amd_detail/hipsparse_auxiliary.cpp"
-                  },
-                  "replacements": [
-                    {
-                      "deletedRegion": {
-                        "charOffset": 3179,
-                        "charLength": 34
-                      },
-                      "insertedContent": {
-                        "text": "memcpy_s(hipsparse_rev, <size of hipsparse_rev>,  v,  sizeof(v)"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "BestPractice",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "API.DangerousAPI.ProblematicFunction"
+              "Cryptography.WeakRandomness"
             ]
           }
         }
